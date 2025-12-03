@@ -17,12 +17,14 @@
     h1 {
       text-align: center;
       margin-bottom: 8px;
+      font-size: 28px;
     }
 
     p.subtitle {
       text-align: center;
       color: #555;
       margin-bottom: 20px;
+      font-size: 15px;
     }
 
     .card {
@@ -51,6 +53,7 @@
       border: none;
       cursor: pointer;
       font-weight: 500;
+      transition: 0.2s ease;
     }
 
     button:hover {
@@ -64,16 +67,15 @@
     }
   </style>
 </head>
+
 <body>
+
   <h1>🍽️ AI Food & Calorie Analyzer</h1>
-  <p class="subtitle">Upload a food photo and get calorie & macro estimates.</p>
+  <p class="subtitle">Upload a food photo and get calorie & macro estimates instantly.</p>
 
   <div class="card">
     <input type="file" id="photo" accept="image/*">
-    <textarea
-      id="notes"
-      placeholder="Extra notes (optional, e.g. very oily, for 2 people...)"
-    ></textarea>
+    <textarea id="notes" placeholder="Extra notes (optional, e.g. very oily, large portion, 2 people...)"></textarea>
     <button onclick="send()">Analyze</button>
   </div>
 
@@ -108,18 +110,32 @@
         );
 
         const data = await response.json();
+
         if (data.result) {
           resultDiv.textContent = data.result;
-        } else if (data.error) {
-          resultDiv.textContent = "Error from server: " + data.error;
+        } 
+        else if (data.error) {
+
+          // Improved error handling
+          if (data.error.includes("rate limit") || data.error.includes("429")) {
+            resultDiv.textContent =
+              "⚠️ The AI has reached its usage limit for now.\n\n" +
+              "Try again later or increase your OpenAI usage limits.";
+          } else {
+            resultDiv.textContent = "Server Error: " + data.error;
+          }
+
         } else {
           resultDiv.textContent = "Unexpected response from server.";
         }
+
       } catch (err) {
         resultDiv.textContent = "Network or server error: " + err;
       }
     }
   </script>
+
 </body>
 </html>
+
 
