@@ -34,7 +34,9 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.12);
     }
 
-    textarea, input[type="file"], button {
+    textarea,
+    input[type="file"],
+    button {
       width: 100%;
       margin-top: 12px;
       padding: 10px;
@@ -68,7 +70,10 @@
 
   <div class="card">
     <input type="file" id="photo" accept="image/*">
-    <textarea id="notes" placeholder="Extra notes (optional, e.g. very oily, for 2 people...)"></textarea>
+    <textarea
+      id="notes"
+      placeholder="Extra notes (optional, e.g. very oily, for 2 people...)"
+    ></textarea>
     <button onclick="send()">Analyze</button>
   </div>
 
@@ -94,18 +99,19 @@
       form.append("notes", notes);
 
       try {
-        // 🔴 IMPORTANT:
-        // When your Python backend is live, replace this URL with your real one.
-        const response = await fetch("https://YOUR-BACKEND-URL/analyze", {
-          method: "POST",
-          body: form
-        });
+        const response = await fetch(
+          "https://food-calorie-backend.onrender.com/analyze",
+          {
+            method: "POST",
+            body: form,
+          }
+        );
 
         const data = await response.json();
         if (data.result) {
           resultDiv.textContent = data.result;
         } else if (data.error) {
-          resultDiv.textContent = "Error: " + data.error;
+          resultDiv.textContent = "Error from server: " + data.error;
         } else {
           resultDiv.textContent = "Unexpected response from server.";
         }
@@ -116,3 +122,4 @@
   </script>
 </body>
 </html>
+
