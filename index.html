@@ -109,7 +109,8 @@
       form.append("file", fileInput.files[0]);
       form.append("notes", notes);
 
-      const backendUrl = "https://food-calorie-backend.onrender.com/analyze";
+     const backendUrl = "https://food-calorie-backend.onrender.com/analyze";
+
 
       try {
         const response = await fetch(backendUrl, {
