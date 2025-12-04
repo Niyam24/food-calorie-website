@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Food & Calorie Analyzer (Debug)</title>
+  <title>AI Food & Calorie Analyzer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -88,7 +88,7 @@
   </div>
 
   <div class="card" id="result-card">
-    <div class="section-title">2️⃣ Result / Debug Output</div>
+    <div class="section-title">2️⃣ Result</div>
     <div id="result-text"><strong>Result will appear here...</strong></div>
   </div>
 
@@ -96,21 +96,21 @@
     async function send() {
       const fileInput = document.getElementById("photo");
       const notes = document.getElementById("notes").value;
-      const resultContainer = document.getElementById("result-text");
+      const resultDiv = document.getElementById("result-text");
 
       if (!fileInput.files[0]) {
         alert("Please upload a photo first.");
         return;
       }
 
-      resultContainer.textContent = "📤 Sending request to backend...";
+      resultDiv.textContent = "📤 Sending request to backend...";
 
       const form = new FormData();
       form.append("file", fileInput.files[0]);
       form.append("notes", notes);
 
-     const backendUrl = "https://food-calorie-backend.onrender.com/analyze";
-
+      // ✅ MAKE SURE THIS URL IS EXACT
+      const backendUrl = "https://food-calorie-backend.onrender.com/analyze";
 
       try {
         const response = await fetch(backendUrl, {
@@ -118,49 +118,27 @@
           body: form,
         });
 
-        let rawText = "";
-        try {
-          // Try to read raw text first (for debugging)
-          rawText = await response.text();
-        } catch (e) {
-          rawText = "(Could not read raw text: " + e + ")";
-        }
+        const data = await response.json();
 
-        let data;
-        try {
-          data = JSON.parse(rawText);
-        } catch (e) {
-          resultContainer.textContent =
-            "❌ Failed to parse JSON from backend.\n\n" +
-            "HTTP status: " + response.status + " " + response.statusText + "\n\n" +
-            "Raw response body:\n" + rawText;
-          return;
-        }
-
-        // Show structured info
         if (data.result) {
-          resultContainer.textContent = data.result;
+          resultDiv.textContent = data.result;
         } else if (data.error) {
           // Special handling for rate limit
           if (data.error.includes("rate limit") || data.error.includes("429")) {
-            resultContainer.textContent =
+            resultDiv.textContent =
               "⚠️ OpenAI rate limit reached.\n\n" +
-              "Details:\n" + data.error + "\n\n" +
-              "Wait for the limit to reset or increase your OpenAI quota.";
+              data.error +
+              "\n\nWait for the limit to reset or increase your OpenAI quota.";
           } else {
-            resultContainer.textContent =
-              "❌ Backend returned an error:\n\n" + data.error;
+            resultDiv.textContent = "❌ Backend error:\n\n" + data.error;
           }
         } else {
-          resultContainer.textContent =
-            "❓ Unexpected JSON from backend:\n\n" +
-            JSON.stringify(data, null, 2);
+          resultDiv.textContent =
+            "❓ Unexpected response:\n\n" + JSON.stringify(data, null, 2);
         }
-
       } catch (err) {
-        resultContainer.textContent =
-          "❌ Network or CORS error while calling backend.\n\n" +
-          "Error object:\n" + err;
+        resultDiv.textContent =
+          "❌ Network or CORS error while calling backend:\n\n" + err;
       }
     }
   </script>
