@@ -126,9 +126,7 @@
           // Special handling for rate limit
           if (data.error.includes("rate limit") || data.error.includes("429")) {
             resultDiv.textContent =
-              "⚠️ OpenAI rate limit reached.\n\n" +
-              data.error +
-              "\n\nWait for the limit to reset or increase your OpenAI quota.";
+              "⚠️server is down please try again in 6hrs 23min";
           } else {
             resultDiv.textContent = "❌ Backend error:\n\n" + data.error;
           }
